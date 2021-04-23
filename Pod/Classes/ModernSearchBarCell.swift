@@ -68,7 +68,7 @@ public class ModernSearchBarCell: UITableViewCell {
         leftLabelConstraint.priority = UILayoutPriority.defaultLow
         let leftLabelConstraintIfImageNil = NSLayoutConstraint(item: self.labelModelSearchBar, attribute:.left, relatedBy: .equal, toItem: self.contentView, attribute: .left, multiplier: 1.0, constant:  ModernSearchBarCell.defaultMargin)
         leftLabelConstraintIfImageNil.priority = UILayoutPriority.defaultLow
-        let rightLabelConstraint = NSLayoutConstraint(item: self.labelModelSearchBar, attribute:.right, relatedBy: .equal, toItem: self.contentView, attribute: .right, multiplier: 1.0, constant:  ModernSearchBarCell.defaultMargin)
+        let rightLabelConstraint = NSLayoutConstraint(item: self.contentView, attribute:.right, relatedBy: .equal, toItem: self.labelModelSearchBar, attribute: .right, multiplier: 1.0, constant:  ModernSearchBarCell.defaultMargin)
         rightLabelConstraint.priority = UILayoutPriority.defaultLow
         
 
