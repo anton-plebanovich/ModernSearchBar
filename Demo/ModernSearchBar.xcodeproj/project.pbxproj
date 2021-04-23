@@ -106,7 +106,7 @@
 			isa = PBXProject;
 			attributes = {
 				LastSwiftUpdateCheck = 0900;
-				LastUpgradeCheck = 1130;
+				LastUpgradeCheck = 1240;
 				ORGANIZATIONNAME = CookMinute;
 				TargetAttributes = {
 					3716D6F71F861A4100E78F74 = {

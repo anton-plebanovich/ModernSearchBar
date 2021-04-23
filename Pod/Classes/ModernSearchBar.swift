@@ -17,7 +17,7 @@ public class ModernSearchBar: UISearchBar, UISearchBarDelegate, UITableViewDataS
     }
     
     //MARK: DATAS
-    private var isSuggestionsViewOpened: Bool!
+    private var isSuggestionsViewOpened: Bool = false
     
     private var suggestionList: Array<String> = Array<String>()
     private var suggestionListFiltred: Array<String> = Array<String>()
@@ -30,8 +30,31 @@ public class ModernSearchBar: UISearchBar, UISearchBarDelegate, UITableViewDataS
     private var keyboardHeight: CGFloat = 0
     
     //MARKS: VIEWS
-    private var suggestionsView: UITableView!
-    private var suggestionsShadow: UIView!
+    private lazy var suggestionsView: UITableView = {
+        ///Configure suggestionsView (TableView)
+        let suggestionsView = UITableView(frame: CGRect(x: getSuggestionsViewX(), y: getSuggestionsViewY(), width: getSuggestionsViewWidth(), height: 0))
+        suggestionsView.delegate = self
+        suggestionsView.dataSource = self
+        suggestionsView.register(ModernSearchBarCell.self, forCellReuseIdentifier: "cell")
+        suggestionsView.rowHeight = UITableView.automaticDimension
+        suggestionsView.estimatedRowHeight = 100
+        suggestionsView.separatorStyle = self.suggestionsView_separatorStyle
+        if let backgroundColor = suggestionsView_backgroundColor { suggestionsView.backgroundColor = backgroundColor }
+        
+        return suggestionsView
+    }()
+    
+    private lazy var suggestionsShadow: UIView = {
+        ///Configure the suggestions shadow (Behing the TableView)
+        let suggestionsShadow = UIView(frame: CGRect(x: getShadowX(), y: getShadowY(), width: getShadowWidth(), height: getShadowHeight()))
+        suggestionsShadow.backgroundColor = UIColor.black.withAlphaComponent(self.shadowView_alpha)
+        
+        ///Configure the gesture to handle click on shadow and improve focus on searchbar
+        let gestureShadow = UITapGestureRecognizer(target: self, action:  #selector (self.onClickShadowView (_:)))
+        suggestionsShadow.addGestureRecognizer(gestureShadow)
+        
+        return suggestionsShadow
+    }()
     
     //MARK: DELEGATE
     public var delegateModernSearchBar: ModernSearchBarDelegate?
@@ -39,13 +62,13 @@ public class ModernSearchBar: UISearchBar, UISearchBarDelegate, UITableViewDataS
     //PUBLICS OPTIONS
     public var shadowView_alpha: CGFloat = 0.3
     
-    public var searchImage: UIImage! = ModernSearchBarIcon.Icon.search.image
+    public var searchImage: UIImage = ModernSearchBarIcon.Icon.search.image
     
     public var searchLabel_font: UIFont?
     public var searchLabel_textColor: UIColor?
     public var searchLabel_backgroundColor: UIColor?
     
-    public var suggestionsView_maxHeight: CGFloat!
+    public var suggestionsView_maxHeight: CGFloat?
     public var suggestionsView_backgroundColor: UIColor?
     public var suggestionsView_contentViewColor: UIColor?
     public var suggestionsView_separatorStyle: UITableViewCell.SeparatorStyle = .none
@@ -54,7 +77,7 @@ public class ModernSearchBar: UISearchBar, UISearchBarDelegate, UITableViewDataS
     
     public var suggestionsView_searchIcon_height: CGFloat = 17
     public var suggestionsView_searchIcon_width: CGFloat = 17
-    public var suggestionsView_searchIcon_isRound = true
+    public var suggestionsView_searchIcon_isRound = false
     
     public var suggestionsView_spaceWithKeyboard:CGFloat = 3
     
@@ -77,31 +100,14 @@ public class ModernSearchBar: UISearchBar, UISearchBarDelegate, UITableViewDataS
     
     private func setup(){
         self.delegate = self
-        self.isSuggestionsViewOpened = false
         self.interceptOrientationChange()
         self.interceptKeyboardChange()
         self.interceptMemoryWarning()
     }
     
     private func configureViews(){
-        
-        ///Configure suggestionsView (TableView)
-        self.suggestionsView = UITableView(frame: CGRect(x: getSuggestionsViewX(), y: getSuggestionsViewY(), width: getSuggestionsViewWidth(), height: 0))
-        self.suggestionsView.delegate = self
-        self.suggestionsView.dataSource = self
-        self.suggestionsView.register(ModernSearchBarCell.self, forCellReuseIdentifier: "cell")
-        self.suggestionsView.rowHeight = UITableView.automaticDimension
-        self.suggestionsView.estimatedRowHeight = 100
-        self.suggestionsView.separatorStyle = self.suggestionsView_separatorStyle
-        if let backgroundColor = suggestionsView_backgroundColor { self.suggestionsView.backgroundColor = backgroundColor }
-        
-        ///Configure the suggestions shadow (Behing the TableView)
-        self.suggestionsShadow = UIView(frame: CGRect(x: getShadowX(), y: getShadowY(), width: getShadowWidth(), height: getShadowHeight()))
-        self.suggestionsShadow.backgroundColor = UIColor.black.withAlphaComponent(self.shadowView_alpha)
-        
-        ///Configure the gesture to handle click on shadow and improve focus on searchbar
-        let gestureShadow = UITapGestureRecognizer(target: self, action:  #selector (self.onClickShadowView (_:)))
-        self.suggestionsShadow.addGestureRecognizer(gestureShadow)
+        _ = suggestionsView
+        _ = suggestionsShadow
         
         let gestureRemoveFocus = UITapGestureRecognizer(target: self, action:  #selector (self.removeFocus (_:)))
         gestureRemoveFocus.cancelsTouchesInView = false
@@ -137,7 +143,6 @@ public class ModernSearchBar: UISearchBar, UISearchBarDelegate, UITableViewDataS
     }
     
     public func searchBarTextDidBeginEditing(_ searchBar: UISearchBar) {
-        if self.suggestionsView == nil { self.configureViews() }
         self.delegateModernSearchBar?.searchBarTextDidEndEditing?(searchBar)
     }
     
