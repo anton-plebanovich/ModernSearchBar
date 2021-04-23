@@ -89,7 +89,7 @@ public class ModernSearchBarCell: UITableViewCell {
             if (model.imgCache != nil){
                 self.imgModernSearchBar.image = model.imgCache
             } else {
-                self.downloadImage(model: model)
+                self.downloadImage(model: model, placeholder: searchImage)
             }
             break
         }
@@ -110,7 +110,8 @@ public class ModernSearchBarCell: UITableViewCell {
     
     //----------------------------
     
-    private func downloadImage(model: ModernSearchBarModel) {
+    private func downloadImage(model: ModernSearchBarModel, placeholder: UIImage) {
+        imgModernSearchBar.image = placeholder
         DispatchQueue.global(qos: .background).async {
             self.getDataFromUrl(url: model.url) { (data, response, error)  in
                 guard let data = data, error == nil else { return }
